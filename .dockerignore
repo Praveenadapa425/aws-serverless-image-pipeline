@@ -1,0 +1,13 @@
+.git
+.gitignore
+.venv
+.pytest_cache
+__pycache__
+*.pyc
+.terraform
+infra/.terraform
+infra/*.tfstate
+infra/*.tfstate.*
+localstack
+dist
+.env

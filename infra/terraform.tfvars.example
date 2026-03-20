@@ -1,0 +1,5 @@
+unique_id      = "yourname123"
+region         = "us-east-1"
+use_localstack = true
+target_width   = "200"
+watermark_text = "© MyCompany"

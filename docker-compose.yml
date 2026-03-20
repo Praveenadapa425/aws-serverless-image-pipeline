@@ -1,0 +1,43 @@
+services:
+  localstack:
+    container_name: "${LOCALSTACK_HOST:-localstack_main}"
+    image: localstack/localstack:3.2
+    ports:
+      - "127.0.0.1:4566:4566"
+      - "127.0.0.1:4510-4559:4510-4559"
+    environment:
+      - DEBUG=${DEBUG:-0}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - SERVICES=s3,sqs,lambda,dynamodb,iam,sts,logs
+      - AWS_DEFAULT_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-test}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-test}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./localstack/volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+  bootstrap:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: image_pipeline_bootstrap
+    depends_on:
+      localstack:
+        condition: service_healthy
+    environment:
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-test}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-test}
+      - PIP_CACHE_DIR=/workspace/.cache/pip
+      - UNIQUE_ID=${UNIQUE_ID:-yourname123}
+      - TARGET_WIDTH=${TARGET_WIDTH:-200}
+      - WATERMARK_TEXT=${WATERMARK_TEXT:-© MyCompany}
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    command: ["bash", "./scripts/bootstrap_local.sh"]
