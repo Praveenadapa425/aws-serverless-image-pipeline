@@ -16,6 +16,7 @@ RUN apt-get update \
 
 COPY requirements-dev.txt /tmp/requirements-dev.txt
 RUN pip install --no-cache-dir -r /tmp/requirements-dev.txt
+RUN pip install --no-cache-dir awscli-local
 
 COPY . /workspace
 

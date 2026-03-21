@@ -12,11 +12,11 @@ until curl -sf "http://localstack:4566/_localstack/health" >/dev/null; do
 done
 
 echo "[bootstrap] Building Lambda packages..."
-python -u ./scripts/build_packages.py
+/usr/local/bin/python -u ./scripts/build_packages.py
 
 echo "[bootstrap] Running Terraform init/apply against LocalStack..."
-terraform -chdir=infra init -input=false
-terraform -chdir=infra apply -auto-approve -input=false \
+/usr/local/bin/terraform -chdir=infra init -input=false
+/usr/local/bin/terraform -chdir=infra apply -auto-approve -input=false \
   -var "unique_id=${UNIQUE_ID}" \
   -var "region=${REGION}" \
   -var "use_localstack=true" \
